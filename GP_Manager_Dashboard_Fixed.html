@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GENERAL PUBLIC | Production Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #ffffff;
+            color: #1a1a1a;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Layout */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+        .hidden { display: none !important; }
+        
+        /* Logo */
+        .logo { height: 24px; width: auto; }
+        .logo-inverted { filter: invert(1); }
+        
+        /* Header */
+        .header {
+            background: #1a1a1a;
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-left { display: flex; align-items: center; gap: 24px; }
+        .header-subtitle {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #666;
+        }
+        .header-right { display: flex; align-items: center; gap: 16px; }
+        .header-time { font-size: 12px; color: #666; }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-white { background: #fff; color: #1a1a1a; }
+        .btn-white:hover { background: #f0f0f0; }
+        .btn-primary { background: #1a1a1a; color: #fff; }
+        .btn-primary:hover { background: #333; }
+        .btn-secondary { background: #fff; color: #1a1a1a; border: 1px solid #1a1a1a; }
+        .btn-secondary:hover { background: #f5f5f5; }
+        .btn-ghost { background: transparent; color: #666; padding: 8px 12px; }
+        .btn-ghost:hover { color: #1a1a1a; }
+        .btn-sm { padding: 6px 12px; font-size: 11px; }
+        .btn-cali { border-color: #1a1a1a; }
+        .btn-universal { border-color: #666; color: #666; }
+        
+        /* Stats Bar */
+        .stats-bar {
+            background: #fafafa;
+            border-bottom: 1px solid #eee;
+            padding: 32px 0;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 32px;
+        }
+        .stat-card { text-align: center; }
+        .stat-value { font-size: 48px; font-weight: 300; color: #1a1a1a; }
+        .stat-label {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #888;
+            margin-top: 4px;
+        }
+        
+        /* Main Content */
+        .main { padding: 48px 0; }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 32px;
+        }
+        .tab {
+            padding: 16px 24px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: #999;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab:hover { color: #666; }
+        .tab.active { color: #1a1a1a; border-bottom-color: #1a1a1a; }
+        
+        /* Section */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .section-title {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #666;
+        }
+        .section-actions { display: flex; gap: 8px; }
+        
+        /* Form */
+        .form-label {
+            display: block;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: #888;
+            margin-bottom: 8px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-family: inherit;
+            border: 1px solid #e0e0e0;
+            border-radius: 0;
+            background: #fff;
+            transition: border-color 0.2s;
+        }
+        .form-input:focus { outline: none; border-color: #1a1a1a; }
+        .form-input::placeholder { color: #bbb; }
+        .form-input-mono { font-family: 'SF Mono', Monaco, monospace; font-size: 13px; }
+        .form-row { display: flex; gap: 12px; margin-bottom: 16px; }
+        .form-row > * { flex: 1; }
+        
+        /* Drop Zone */
+        .drop-zone {
+            border: 2px dashed #ddd;
+            padding: 64px 32px;
+            text-align: center;
+            transition: all 0.2s;
+            margin-bottom: 32px;
+        }
+        .drop-zone:hover, .drop-zone.dragover { border-color: #1a1a1a; background: #fafafa; }
+        .drop-zone-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.3; }
+        .drop-zone-text { font-size: 14px; color: #666; margin-bottom: 8px; }
+        .drop-zone-hint { font-size: 12px; color: #999; }
+        
+        /* Processing */
+        .processing { margin-bottom: 24px; }
+        .processing-text { font-size: 13px; color: #666; margin-bottom: 8px; }
+        .processing-bar { height: 2px; background: #eee; }
+        .processing-fill { height: 100%; background: #1a1a1a; transition: width 0.3s; }
+        
+        /* Table */
+        .table-container { border: 1px solid #eee; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead { background: #fafafa; }
+        th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: #888;
+            border-bottom: 1px solid #eee;
+        }
+        th.center { text-align: center; }
+        td { padding: 12px 16px; border-bottom: 1px solid #f5f5f5; }
+        td.center { text-align: center; }
+        td.mono { font-family: 'SF Mono', Monaco, monospace; font-size: 12px; }
+        tr:hover { background: #fafafa; }
+        tbody tr:last-child td { border-bottom: none; }
+        
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            border: 1px solid;
+        }
+        .badge-production { border-color: #ddd; color: #888; }
+        .badge-cali { border-color: #1a1a1a; color: #1a1a1a; }
+        .badge-universal { border-color: #666; color: #666; }
+        
+        /* Empty State */
+        .empty-state {
+            padding: 64px 32px;
+            text-align: center;
+            color: #999;
+            font-size: 14px;
+            border: 1px solid #eee;
+        }
+        
+        /* Extracted Preview */
+        .extracted-preview { margin-bottom: 32px; }
+        .extracted-actions { display: flex; gap: 12px; margin-top: 16px; }
+        
+        /* Manual Entry */
+        .manual-entry {
+            padding-top: 32px;
+            margin-top: 32px;
+            border-top: 1px solid #eee;
+        }
+        .manual-entry-title {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #666;
+            margin-bottom: 16px;
+        }
+        
+        /* Queue Header */
+        .queue-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .queue-icon { font-size: 24px; }
+        .queue-title { font-size: 18px; font-weight: 600; }
+        .queue-count {
+            font-size: 12px;
+            font-weight: 600;
+            color: #888;
+            background: #f5f5f5;
+            padding: 4px 12px;
+        }
+        
+        /* Alerts */
+        .alerts-panel {
+            background: #fafafa;
+            border: 1px solid #eee;
+            padding: 24px;
+            margin-top: 48px;
+        }
+        .alerts-title {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #666;
+            margin-bottom: 16px;
+        }
+        .alert-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .alert-item:last-child { border-bottom: none; }
+        .alert-icon { font-size: 18px; }
+        .alert-content { flex: 1; }
+        .alert-message { font-size: 13px; }
+        .alert-meta { font-size: 11px; color: #999; margin-top: 2px; }
+        
+        /* Action Link */
+        .action-link {
+            font-size: 12px;
+            color: #666;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .action-link:hover { color: #1a1a1a; }
+        .action-link.danger { color: #c00; }
+        .action-link.danger:hover { color: #900; }
+        
+        /* Print Styles */
+        @media print {
+            .header, .tabs, .stats-bar, .btn { display: none; }
+            .main { padding: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="container">
+            <div class="header-inner">
+                <div class="header-left">
+                    <span style="color: #fff; font-size: 18px; font-weight: 700; letter-spacing: -0.02em;">GENERAL PUBLIC</span>
+                    <span class="header-subtitle">Production Manager</span>
+                </div>
+                <div class="header-right">
+                    <span class="header-time" id="last-refresh"></span>
+                    <button onclick="refreshData()" class="btn btn-white">↻ Refresh</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-production">0</div>
+                    <div class="stat-label">In Production</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-scanned">0</div>
+                    <div class="stat-label">Scanned Today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-cali">0</div>
+                    <div class="stat-label">Ready for Cali</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-universal">0</div>
+                    <div class="stat-label">Ready for Universal</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+        <div class="container">
+            <!-- Tabs -->
+            <div class="tabs">
+                <button onclick="showTab('upload')" id="tab-upload" class="tab active">Upload PDFs</button>
+                <button onclick="showTab('production')" id="tab-production" class="tab">Production List</button>
+                <button onclick="showTab('cali')" id="tab-cali" class="tab">Cali Queue</button>
+                <button onclick="showTab('universal')" id="tab-universal" class="tab">Universal Queue</button>
+                <button onclick="showTab('log')" id="tab-log" class="tab">Scan Log</button>
+            </div>
+
+            <!-- Upload Tab -->
+            <div id="content-upload">
+                <div class="section-header">
+                    <h2 class="section-title">Upload Production Tickets</h2>
+                </div>
+                
+                <div class="drop-zone" id="drop-zone">
+                    <div class="drop-zone-icon">📄</div>
+                    <div class="drop-zone-text">Drag & drop PDF files here</div>
+                    <div class="drop-zone-hint">or click to select files</div>
+                    <input type="file" id="file-input" multiple accept=".pdf" class="hidden" onchange="handleFileSelect(event)">
+                </div>
+
+                <div id="processing" class="processing hidden">
+                    <div class="processing-text" id="processing-text">Processing...</div>
+                    <div class="processing-bar">
+                        <div class="processing-fill" id="processing-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div id="extracted-preview" class="extracted-preview hidden">
+                    <div class="section-title" style="margin-bottom: 16px;">Extracted Items</div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Production #</th>
+                                    <th>SKU</th>
+                                    <th>Description</th>
+                                    <th>Customer PO</th>
+                                    <th class="center">Qty</th>
+                                    <th class="center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="extracted-body"></tbody>
+                        </table>
+                    </div>
+                    <div class="extracted-actions">
+                        <button onclick="addAllToProduction()" class="btn btn-primary">Add All to Production</button>
+                        <button onclick="clearExtracted()" class="btn btn-secondary">Clear</button>
+                    </div>
+                </div>
+
+                <div class="manual-entry">
+                    <div class="manual-entry-title">Manual Entry</div>
+                    <form onsubmit="handleManualEntry(event)">
+                        <div class="form-row">
+                            <div>
+                                <label class="form-label">Production #</label>
+                                <input type="text" id="manual-prod" class="form-input form-input-mono" placeholder="00014811" required>
+                            </div>
+                            <div>
+                                <label class="form-label">SKU</label>
+                                <input type="text" id="manual-sku" class="form-input form-input-mono" placeholder="GP2004276-BC" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div style="flex: 2;">
+                                <label class="form-label">Description</label>
+                                <input type="text" id="manual-desc" class="form-input" placeholder="INTERLUDE 80X64" required>
+                            </div>
+                            <div>
+                                <label class="form-label">Customer PO</label>
+                                <input type="text" id="manual-po" class="form-input form-input-mono" placeholder="RH 5178984">
+                            </div>
+                            <div style="flex: 0 0 80px;">
+                                <label class="form-label">Qty</label>
+                                <input type="number" id="manual-qty" class="form-input" value="1" min="1" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add to Production</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Production List Tab -->
+            <div id="content-production" class="hidden">
+                <div class="section-header">
+                    <h2 class="section-title">Production List</h2>
+                    <div class="section-actions">
+                        <input type="text" id="search-production" class="form-input" placeholder="Search..." style="width: 200px;" oninput="filterTable('production')">
+                        <button onclick="exportTable('production')" class="btn btn-secondary">Export CSV</button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Production #</th>
+                                <th>SKU</th>
+                                <th>Description</th>
+                                <th>Customer PO</th>
+                                <th class="center">Qty</th>
+                                <th>Added</th>
+                                <th class="center">Status</th>
+                                <th class="center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="production-body"></tbody>
+                    </table>
+                </div>
+                <div id="production-empty" class="empty-state hidden">No items in production</div>
+                
+                <div class="alerts-panel">
+                    <div class="alerts-title">Recent Alerts</div>
+                    <div id="alerts-container"></div>
+                </div>
+            </div>
+
+            <!-- Cali Queue Tab -->
+            <div id="content-cali" class="hidden">
+                <div class="queue-header">
+                    <div class="queue-icon">📦</div>
+                    <div class="queue-title">Ready for Cali Frame</div>
+                    <div class="queue-count" id="cali-count">0 items</div>
+                </div>
+                <div class="section-header">
+                    <div class="section-actions">
+                        <input type="text" id="search-cali" class="form-input" placeholder="Search..." style="width: 200px;" oninput="filterTable('cali')">
+                        <button onclick="exportTable('cali')" class="btn btn-secondary btn-cali">Export CSV</button>
+                        <button onclick="printPackingList('Cali')" class="btn btn-primary">Print Packing List</button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Production #</th>
+                                <th>SKU</th>
+                                <th>Description</th>
+                                <th>Customer PO</th>
+                                <th class="center">Unit</th>
+                                <th>Scanned By</th>
+                                <th>Time</th>
+                                <th class="center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cali-body"></tbody>
+                    </table>
+                </div>
+                <div id="cali-empty" class="empty-state hidden">No items ready for Cali Frame</div>
+            </div>
+
+            <!-- Universal Queue Tab -->
+            <div id="content-universal" class="hidden">
+                <div class="queue-header">
+                    <div class="queue-icon">📦</div>
+                    <div class="queue-title">Ready for Universal Arquati</div>
+                    <div class="queue-count" id="universal-count">0 items</div>
+                </div>
+                <div class="section-header">
+                    <div class="section-actions">
+                        <input type="text" id="search-universal" class="form-input" placeholder="Search..." style="width: 200px;" oninput="filterTable('universal')">
+                        <button onclick="exportTable('universal')" class="btn btn-secondary btn-universal">Export CSV</button>
+                        <button onclick="printPackingList('Universal')" class="btn btn-primary">Print Packing List</button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Production #</th>
+                                <th>SKU</th>
+                                <th>Description</th>
+                                <th>Customer PO</th>
+                                <th class="center">Unit</th>
+                                <th>Scanned By</th>
+                                <th>Time</th>
+                                <th class="center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="universal-body"></tbody>
+                    </table>
+                </div>
+                <div id="universal-empty" class="empty-state hidden">No items ready for Universal Arquati</div>
+            </div>
+
+            <!-- Scan Log Tab -->
+            <div id="content-log" class="hidden">
+                <div class="section-header">
+                    <h2 class="section-title">Scan Log</h2>
+                    <div class="section-actions">
+                        <input type="text" id="search-log" class="form-input" placeholder="Search..." style="width: 200px;" oninput="filterTable('log')">
+                        <button onclick="exportTable('log')" class="btn btn-secondary">Export CSV</button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Worker</th>
+                                <th>Production #</th>
+                                <th>SKU</th>
+                                <th>Description</th>
+                                <th class="center">Unit</th>
+                                <th class="center">Destination</th>
+                            </tr>
+                        </thead>
+                        <tbody id="log-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ============================================
+    // CONFIGURATION
+    // ============================================
+    const CONFIG = {
+        GOOGLE_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbx3WX7luOeAxOYODha4sd8d3wpTFja_pfUblqrL6OIzgJ3fuMQ4-S3-r1uj9tVxw7iT-w/exec',
+        DEMO_MODE: false  // Set to false for production
+    };
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    // ============================================
+    // STATE
+    // ============================================
+    let productionList = [];
+    let caliQueue = [];
+    let universalQueue = [];
+    let scanLog = [];
+    let extractedItems = [];
+    let alerts = [];
+
+    const DEMO_DATA = {
+        production: [
+            { prodNbr: "00014811", sku: "GP2004276-BC", desc: "INTERLUDE 80X64", po: "RH 5178984", qty: 1, added: "2026-01-19", status: "In Production" },
+            { prodNbr: "00014812", sku: "GP200087701-WF", desc: "EXPORT V 24X72", po: "RH 5178983", qty: 1, added: "2026-01-19", status: "In Production" },
+            { prodNbr: "00014817", sku: "GP200427303-GW", desc: "CODA 36X45", po: "RH 5178982", qty: 5, added: "2026-01-19", status: "In Production" },
+        ],
+        cali: [
+            { prodNbr: "00014815", sku: "GP2007302-GCR1", desc: "WARM BREEZE 18X14", po: "RH 5178981", unit: 1, total: 1, by: "Juan", time: "10:15 AM" },
+            { prodNbr: "00014816", sku: "GP2000626-GW", desc: "FORMWORK 60X48", po: "RH 5178982", unit: 1, total: 1, by: "Maria", time: "11:32 AM" },
+        ],
+        universal: [
+            { prodNbr: "00014818", sku: "GP200490701-BF", desc: "UNTITLED II A 45X60", po: "RH 5178985", unit: 1, total: 3, by: "Juan", time: "2:45 PM" },
+        ],
+        log: [
+            { time: "2:45 PM", worker: "Juan", prodNbr: "00014818", sku: "GP200490701-BF", desc: "UNTITLED II A 45X60", unit: 1, total: 3, dest: "Universal" },
+            { time: "11:32 AM", worker: "Maria", prodNbr: "00014816", sku: "GP2000626-GW", desc: "FORMWORK 60X48", unit: 1, total: 1, dest: "Cali" },
+            { time: "10:15 AM", worker: "Juan", prodNbr: "00014815", sku: "GP2007302-GCR1", desc: "WARM BREEZE 18X14", unit: 1, total: 1, dest: "Cali" },
+        ]
+    };
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    document.addEventListener('DOMContentLoaded', () => {
+        loadData();
+        setupDragDrop();
+        setInterval(refreshData, 60000);
+    });
+
+    // ============================================
+    // DATA
+    // ============================================
+    async function loadData() {
+        if (CONFIG.DEMO_MODE) {
+            productionList = [...DEMO_DATA.production];
+            caliQueue = [...DEMO_DATA.cali];
+            universalQueue = [...DEMO_DATA.universal];
+            scanLog = [...DEMO_DATA.log];
+        } else {
+            try {
+                const response = await fetch(CONFIG.GOOGLE_SCRIPT_URL + '?action=getAllData');
+                const data = await response.json();
+                productionList = data.production || [];
+                caliQueue = data.cali || [];
+                universalQueue = data.universal || [];
+                scanLog = data.log || [];
+                alerts = data.alerts || [];
+            } catch (error) {
+                console.error('Failed to load data:', error);
+            }
+        }
+        updateUI();
+        document.getElementById('last-refresh').textContent = 'Updated ' + new Date().toLocaleTimeString();
+    }
+
+    function refreshData() { loadData(); }
+
+    function updateUI() {
+        document.getElementById('stat-production').textContent = productionList.length;
+        document.getElementById('stat-scanned').textContent = scanLog.length;
+        document.getElementById('stat-cali').textContent = caliQueue.length;
+        document.getElementById('stat-universal').textContent = universalQueue.length;
+        document.getElementById('cali-count').textContent = caliQueue.length + ' items';
+        document.getElementById('universal-count').textContent = universalQueue.length + ' items';
+        
+        renderProductionTable();
+        renderQueueTable('cali', caliQueue);
+        renderQueueTable('universal', universalQueue);
+        renderLogTable();
+        renderAlerts();
+    }
+
+    // ============================================
+    // TABS
+    // ============================================
+    function showTab(tab) {
+        document.querySelectorAll('[id^="content-"]').forEach(el => el.classList.add('hidden'));
+        document.getElementById('content-' + tab).classList.remove('hidden');
+        document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+        document.getElementById('tab-' + tab).classList.add('active');
+    }
+
+    // ============================================
+    // PDF PROCESSING
+    // ============================================
+    function setupDragDrop() {
+        const dropZone = document.getElementById('drop-zone');
+        
+        dropZone.addEventListener('click', () => document.getElementById('file-input').click());
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+    }
+
+    function handleFileSelect(event) { handleFiles(event.target.files); }
+
+    async function handleFiles(files) {
+        const pdfFiles = Array.from(files).filter(f => f.type === 'application/pdf');
+        if (pdfFiles.length === 0) { alert('Please select PDF files'); return; }
+
+        document.getElementById('processing').classList.remove('hidden');
+        extractedItems = [];
+
+        for (let i = 0; i < pdfFiles.length; i++) {
+            document.getElementById('processing-text').textContent = `Processing ${pdfFiles[i].name}... (${i+1}/${pdfFiles.length})`;
+            document.getElementById('processing-fill').style.width = `${((i+1)/pdfFiles.length)*100}%`;
+            try {
+                const items = await extractFromPDF(pdfFiles[i]);
+                extractedItems.push(...items);
+            } catch (error) { console.error('Error processing PDF:', error); }
+        }
+
+        document.getElementById('processing').classList.add('hidden');
+        if (extractedItems.length > 0) { renderExtractedItems(); document.getElementById('extracted-preview').classList.remove('hidden'); }
+        else { alert('No production tickets found in the uploaded PDFs'); }
+    }
+
+    async function extractFromPDF(file) {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const items = [];
+
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            const text = textContent.items.map(item => item.str).join(' ');
+            const item = parseProductionTicket(text);
+            if (item) items.push(item);
+        }
+        return items;
+    }
+
+    // ============================================
+    // IMPROVED PDF PARSING
+    // ============================================
+    function parseProductionTicket(text) {
+        // Production Number - look for "Production Nbr.: 00014847" pattern
+        const prodMatch = text.match(/Production\s+Nbr\.?:?\s*(\d{8})/i);
+        
+        // SKU - look for "Inventory ID: GP2004274-BC" pattern  
+        const skuMatch = text.match(/Inventory\s+ID:?\s*(GP[\w-]+)/i);
+        
+        // Description - look for title AFTER Inventory ID line but BEFORE "Customer PO"
+        // The title appears on its own line between the SKU line and Customer PO line
+        // e.g., "FORGE 51X64" or "MIRAGE 02 48X48"
+        let desc = '';
+        const descMatch = text.match(/Inventory\s+ID:?\s*GP[\w-]+\s+[^C]*?([A-Z][A-Z0-9\s]+\d+X\d+)\s+Customer\s+PO/i);
+        if (descMatch) {
+            desc = descMatch[1].trim();
+        } else {
+            // Fallback: look for pattern like "FORGE 51X64" or "MIRAGE 02 48X48" near start
+            const fallbackDesc = text.match(/(?:Start Date:[^A-Z]*|Substrate:[^A-Z]*)([A-Z][A-Z0-9\s]{2,30}\d+X\d+)/i);
+            if (fallbackDesc) desc = fallbackDesc[1].trim();
+        }
+        
+        // Customer PO - look for "Customer PO Nbr. 5186526" or "Customer PO Nbr.: 5186526"
+        const poMatch = text.match(/Customer\s+PO\s+Nbr\.?\s*:?\s*(\d+)/i);
+        
+        // Quantity - look for "Qty to Prod: 1.00EA" or similar
+        const qtyMatch = text.match(/Qty\s+to\s+Prod:?\s*([\d.]+)/i);
+
+        // Only create item if we have at least production number or SKU
+        if (prodMatch || skuMatch) {
+            return {
+                prodNbr: prodMatch ? prodMatch[1].trim() : '',
+                sku: skuMatch ? skuMatch[1].trim() : '',
+                desc: desc || 'Unknown',
+                po: poMatch ? poMatch[1].trim() : '',
+                qty: qtyMatch ? Math.floor(parseFloat(qtyMatch[1])) : 1
+            };
+        }
+        return null;
+    }
+
+    function renderExtractedItems() {
+        const tbody = document.getElementById('extracted-body');
+        tbody.innerHTML = extractedItems.map((item, i) => `
+            <tr>
+                <td class="mono">${item.prodNbr}</td>
+                <td class="mono">${item.sku}</td>
+                <td>${item.desc}</td>
+                <td class="mono">${item.po}</td>
+                <td class="center">${item.qty}</td>
+                <td class="center"><span class="action-link danger" onclick="removeExtracted(${i})">Remove</span></td>
+            </tr>
+        `).join('');
+    }
+
+    function removeExtracted(index) {
+        extractedItems.splice(index, 1);
+        renderExtractedItems();
+        if (extractedItems.length === 0) document.getElementById('extracted-preview').classList.add('hidden');
+    }
+
+    function clearExtracted() {
+        extractedItems = [];
+        document.getElementById('extracted-preview').classList.add('hidden');
+    }
+
+    async function addAllToProduction() {
+        const today = new Date().toISOString().split('T')[0];
+        const newItems = extractedItems.map(item => ({ ...item, added: today, status: 'In Production' }));
+        
+        if (!CONFIG.DEMO_MODE) {
+            try { 
+                await fetch(CONFIG.GOOGLE_SCRIPT_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ action: 'addProduction', items: newItems }) 
+                }); 
+            } catch (e) { 
+                console.error(e); 
+            }
+        }
+        
+        // Add to local state after backend call
+        productionList.push(...newItems);
+        clearExtracted();
+        updateUI();
+        showTab('production');
+    }
+
+    // ============================================
+    // MANUAL ENTRY
+    // ============================================
+    async function handleManualEntry(e) {
+        e.preventDefault();
+        const item = {
+            prodNbr: document.getElementById('manual-prod').value.trim(),
+            sku: document.getElementById('manual-sku').value.trim(),
+            desc: document.getElementById('manual-desc').value.trim(),
+            po: document.getElementById('manual-po').value.trim(),
+            qty: parseInt(document.getElementById('manual-qty').value) || 1,
+            added: new Date().toISOString().split('T')[0],
+            status: 'In Production'
+        };
+        
+        if (!CONFIG.DEMO_MODE) {
+            try {
+                await fetch(CONFIG.GOOGLE_SCRIPT_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ action: 'addProduction', items: [item] }) 
+                });
+            } catch (e) {
+                console.error(e);
+            }
+        }
+        
+        productionList.push(item);
+        updateUI();
+        
+        document.getElementById('manual-prod').value = '';
+        document.getElementById('manual-sku').value = '';
+        document.getElementById('manual-desc').value = '';
+        document.getElementById('manual-po').value = '';
+        document.getElementById('manual-qty').value = '1';
+    }
+
+    // ============================================
+    // TABLE RENDERING
+    // ============================================
+    function renderProductionTable() {
+        const tbody = document.getElementById('production-body');
+        const empty = document.getElementById('production-empty');
+        
+        if (productionList.length === 0) { tbody.innerHTML = ''; empty.classList.remove('hidden'); return; }
+        empty.classList.add('hidden');
+        
+        tbody.innerHTML = productionList.map((item, i) => `
+            <tr>
+                <td class="mono">${item.prodNbr || ''}</td>
+                <td class="mono">${item.sku || ''}</td>
+                <td>${item.desc || ''}</td>
+                <td class="mono">${item.po || ''}</td>
+                <td class="center">${item.qty || 1}</td>
+                <td>${item.added || ''}</td>
+                <td class="center"><span class="badge badge-production">${item.status || 'In Production'}</span></td>
+                <td class="center"><span class="action-link danger" onclick="removeFromProduction(${i})">Remove</span></td>
+            </tr>
+        `).join('');
+    }
+
+    function renderQueueTable(type, queue) {
+        const tbody = document.getElementById(type + '-body');
+        const empty = document.getElementById(type + '-empty');
+        
+        if (queue.length === 0) { tbody.innerHTML = ''; empty.classList.remove('hidden'); return; }
+        empty.classList.add('hidden');
+        
+        tbody.innerHTML = queue.map((item, i) => `
+            <tr>
+                <td class="mono">${item.prodNbr || ''}</td>
+                <td class="mono">${item.sku || ''}</td>
+                <td>${item.desc || ''}</td>
+                <td class="mono">${item.po || ''}</td>
+                <td class="center">${item.unit || 1}/${item.total || 1}</td>
+                <td>${item.by || ''}</td>
+                <td>${item.time || ''}</td>
+                <td class="center"><span class="action-link" onclick="moveItem('${type}', ${i})">Move</span></td>
+            </tr>
+        `).join('');
+    }
+
+    function renderLogTable() {
+        const tbody = document.getElementById('log-body');
+        tbody.innerHTML = scanLog.map(item => `
+            <tr>
+                <td>${item.time || ''}</td>
+                <td>${item.worker || item.by || ''}</td>
+                <td class="mono">${item.prodNbr || ''}</td>
+                <td class="mono">${item.sku || ''}</td>
+                <td>${item.desc || ''}</td>
+                <td class="center">${item.unit || 1}/${item.total || 1}</td>
+                <td class="center"><span class="badge badge-${(item.dest || '').toLowerCase()}">${item.dest || ''}</span></td>
+            </tr>
+        `).join('');
+    }
+
+    function renderAlerts() {
+        const container = document.getElementById('alerts-container');
+        if (alerts.length === 0) { container.innerHTML = '<div style="color: #999; font-size: 13px;">No alerts</div>'; return; }
+        container.innerHTML = alerts.slice(0, 5).map(alert => `
+            <div class="alert-item">
+                <span class="alert-icon">${alert.type === 'imageNotFound' ? '🖼' : '⚠️'}</span>
+                <div class="alert-content">
+                    <div class="alert-message">${alert.message}</div>
+                    <div class="alert-meta">${alert.time} · ${alert.worker}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // ============================================
+    // ACTIONS
+    // ============================================
+    async function removeFromProduction(index) {
+        if (!confirm('Remove this item from production list?')) return;
+        
+        const item = productionList[index];
+        
+        if (!CONFIG.DEMO_MODE) {
+            try {
+                await fetch(CONFIG.GOOGLE_SCRIPT_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ 
+                        action: 'removeProduction', 
+                        prodNbr: item.prodNbr,
+                        sku: item.sku
+                    }) 
+                });
+            } catch (e) {
+                console.error(e);
+            }
+        }
+        
+        productionList.splice(index, 1);
+        updateUI();
+    }
+
+    function moveItem(fromQueue, index) {
+        const targetQueue = fromQueue === 'cali' ? 'universal' : 'cali';
+        const item = (fromQueue === 'cali' ? caliQueue : universalQueue)[index];
+        if (confirm(`Move ${item.sku} to ${targetQueue.toUpperCase()}?`)) {
+            if (fromQueue === 'cali') { caliQueue.splice(index, 1); universalQueue.push(item); }
+            else { universalQueue.splice(index, 1); caliQueue.push(item); }
+            updateUI();
+        }
+    }
+
+    function filterTable(type) {
+        const searchTerm = document.getElementById('search-' + type).value.toLowerCase();
+        const rows = document.getElementById(type + '-body').querySelectorAll('tr');
+        rows.forEach(row => { row.style.display = row.textContent.toLowerCase().includes(searchTerm) ? '' : 'none'; });
+    }
+
+    function exportTable(type) {
+        let data, filename;
+        switch(type) {
+            case 'production': data = productionList; filename = 'production_list.csv'; break;
+            case 'cali': data = caliQueue; filename = 'cali_queue.csv'; break;
+            case 'universal': data = universalQueue; filename = 'universal_queue.csv'; break;
+            case 'log': data = scanLog; filename = 'scan_log.csv'; break;
+        }
+        if (!data || data.length === 0) { alert('No data to export'); return; }
+        const headers = Object.keys(data[0]);
+        const csv = [headers.join(','), ...data.map(row => headers.map(h => `"${row[h] || ''}"`).join(','))].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; a.click();
+    }
+
+    function printPackingList(destination) {
+        const queue = destination === 'Cali' ? caliQueue : universalQueue;
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+            <head>
+                <title>Packing List - ${destination}</title>
+                <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+                <style>
+                    body { font-family: 'Inter', sans-serif; padding: 40px; color: #1a1a1a; }
+                    h1 { font-size: 14px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+                    .date { font-size: 12px; color: #666; margin-bottom: 32px; }
+                    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+                    th { text-align: left; padding: 8px; font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #888; border-bottom: 1px solid #eee; }
+                    td { padding: 8px; border-bottom: 1px solid #f5f5f5; }
+                    .total { margin-top: 24px; font-size: 12px; font-weight: 600; }
+                    .logo { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 32px; }
+                </style>
+            </head>
+            <body>
+                <div class="logo">GENERAL PUBLIC</div>
+                <h1>Packing List — ${destination}</h1>
+                <div class="date">${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}</div>
+                <table>
+                    <thead><tr><th>#</th><th>Prod #</th><th>SKU</th><th>Description</th><th>PO</th><th>Unit</th></tr></thead>
+                    <tbody>${queue.map((item, i) => `<tr><td>${i+1}</td><td>${item.prodNbr}</td><td>${item.sku}</td><td>${item.desc}</td><td>${item.po}</td><td>${item.unit}/${item.total}</td></tr>`).join('')}</tbody>
+                </table>
+                <div class="total">Total: ${queue.length} items</div>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+        printWindow.print();
+    }
+    </script>
+</body>
+</html>
